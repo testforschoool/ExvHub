@@ -52,11 +52,6 @@ end
 ps.PlayerAdded:Connect(p_added)
 
 -- Add a toggle button to the UI and connect it to the following function:
-local toggleButton = script.Parent.FindFirstChild("ToggleButton")
-
-toggleButton.Changed:Connect(function(newState)
-    silentAimEnabled = newState
-end)
 
 -- Add a slider to the UI to adjust the FOV
 local fovSlider = script.Parent.FindFirstChild("FOVSlider")
@@ -66,22 +61,3 @@ fovSlider.Changed:Connect(function(newFOV)
 end)
 
 -- Add a toggle button to the UI to enable or disable teamcheck
-local teamcheckButton = script.Parent.FindFirstChild("TeamcheckButton")
-
-teamcheckButton.Changed:Connect(function(newState)
-    teamcheck = newState
-end)
-
--- Add a toggle button to the UI to enable or disable wallbang
-local wallbangButton = script.Parent.FindFirstChild("WallbangButton")
-
-wallbangButton.Changed:Connect(function(newState)
-    wallbang = newState
-end)
-
--- Add a toggle button to the UI to enable or disable alivecheck
-local alivecheckButton = script.Parent.FindFirstChild("AlivecheckButton")
-
-alivecheckButton.Changed:Connect(function(newState)
-    alivecheck = newState
-end)
