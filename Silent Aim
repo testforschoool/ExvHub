@@ -1,0 +1,87 @@
+local c = workspace.CurrentCamera
+local ps = game:GetService("Players")
+local lp = ps.LocalPlayer
+local rs = game:GetService("RunService")
+
+local silentAimEnabled = false
+local FOV = 180
+local teamcheck = true
+local wallbang = false
+local alivecheck = true
+
+local function silentAim(p,cr)
+    local h = cr:WaitForChild("Humanoid")
+    local hrp = cr:WaitForChild("HumanoidRootPart")
+
+    -- Check if the target is within the FOV
+    local aimVector = (hrp.Position - lp.Character.HumanoidRootPart.Position).Unit
+    local aimAngle = c.CFrame.LookVector:Dot(aimVector)
+    if aimAngle < math.cos(FOV/2) then return end
+
+    -- Check if the target is on the same team (if teamcheck is enabled)
+    if teamcheck and lp.Team == p.Team then return end
+
+    -- Check if the target is alive (if alivecheck is enabled)
+    if alivecheck and h.Health <= 0 then return end
+
+    -- Wallbang the target (if wallbang is enabled)
+    if wallbang then
+        lp.Character.HumanoidRootPart.CFrame = CFrame.new(lp.Character.HumanoidRootPart.Position, aimVector)
+    else
+        -- Aim at the target's head
+        lp.Character.HumanoidRootPart.CFrame = CFrame.new(lp.Character.HumanoidRootPart.Position, aimVector + (Vector3.new(0, 0.5, 0)))
+    end
+end
+
+local function p_added(p)
+    if p ~= lp then
+        if silentAimEnabled then
+            p.CharacterAdded:Connect(function(cr)
+                silentAim(p,cr)
+            end)
+        end
+    end
+end
+
+for i,p in next, ps:GetPlayers() do 
+    if p ~= lp then
+        p_added(p)
+    end
+end
+
+ps.PlayerAdded:Connect(p_added)
+
+-- Add a toggle button to the UI and connect it to the following function:
+local toggleButton = script.Parent.FindFirstChild("ToggleButton")
+
+toggleButton.Changed:Connect(function(newState)
+    silentAimEnabled = newState
+end)
+
+-- Add a slider to the UI to adjust the FOV
+local fovSlider = script.Parent.FindFirstChild("FOVSlider")
+
+fovSlider.Changed:Connect(function(newFOV)
+    FOV = newFOV
+end)
+
+-- Add a toggle button to the UI to enable or disable teamcheck
+local teamcheckButton = script.Parent.FindFirstChild("TeamcheckButton")
+
+teamcheckButton.Changed:Connect(function(newState)
+    teamcheck = newState
+end)
+
+-- Add a toggle button to the UI to enable or disable wallbang
+local wallbangButton = script.Parent.FindFirstChild("WallbangButton")
+
+wallbangButton.Changed:Connect(function(newState)
+    wallbang = newState
+end)
+
+-- Add a toggle button to the UI to enable or disable alivecheck
+local alivecheckButton = script.Parent.FindFirstChild("AlivecheckButton")
+
+alivecheckButton.Changed:Connect(function(newState)
+    alivecheck = newState
+end)
